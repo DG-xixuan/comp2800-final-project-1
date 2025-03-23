@@ -6,6 +6,8 @@ import org.jogamp.java3d.*;
 import org.jogamp.java3d.utils.geometry.*;
 import org.jogamp.vecmath.*;
 
+import LudoProject.MaterialManager;
+import LudoProject.ObjectManager;
 
 
 
@@ -25,19 +27,37 @@ public abstract class ObjectManager {
 
 		
 }
+//class for all box objects
 class RectangleBox extends ObjectManager {//make more classes like this
 	public RectangleBox() {
 		Transform3D translator = new Transform3D();
-		translator.setTranslation(new Vector3d(0.0f, -0.54f, 0f));
+		translator.setTranslation(new Vector3d(0.0f, 0f, 0f));
 		objTG = new TransformGroup(translator);            
 
-		objTG.addChild(create_Object(1f, 0.04f, 1f));                   // attach the object to 'objTG'
+		objTG.addChild(create_Object(1f, 0.05f, 1f));                   // attach the object to 'objTG'
 	}
 	public RectangleBox(Vector3d v, float l, float h, float b) {
 		Transform3D translator = new Transform3D();
 		translator.setTranslation(v);
-		objTG = new TransformGroup(translator);            
-		objTG.addChild(create_Object(l, h, b));                   // attach the object to 'objTG'
+		objTG = new TransformGroup(translator); 
+		//System.out.println("hello");
+		Appearance a = new Appearance();
+		System.err.println(System.getProperty("user.dir"));
+		a = MaterialManager.set_Appearance("tile3.jpg");   // set the appearance for top of tile
+		objTG.addChild(create_Object(l, h, b, a));                   // attach the object to 'objTG'
+	}
+	
+	protected Node create_Object(float l, float h, float b, Appearance a) {
+		System.err.println(System.getProperty("user.dir"));
+		app = MaterialManager.set_Appearance("concrete.jpg" );
+		
+		Appearance appTop = a;
+		
+		Box base =  new Box(l, h, b, Primitive.GENERATE_TEXTURE_COORDS|Primitive.GENERATE_NORMALS, app);
+		
+		base.getShape(Box.TOP).setAppearance(appTop);
+		
+		return base;
 	}
 	
 	protected Node create_Object(float l, float h, float b) {
@@ -51,6 +71,52 @@ class RectangleBox extends ObjectManager {//make more classes like this
 		
 		return base;
 	}
+}
+//class for color tile objects 
+class ColorTile extends ObjectManager {//make more classes like this
+
+	public ColorTile(Vector3d v, float l, float h, String t) {
+		Transform3D translator = new Transform3D();
+		translator.setTranslation(v);
+		objTG = new TransformGroup(translator); 
+		
+		objTG.addChild(create_Object(l, h, t));                   // attach the object to 'objTG'
+	}
+	
+	public ColorTile(Vector3d v, String t, int tilt, float h)
+	{
+		Transform3D translator = new Transform3D();
+		translator.setTranslation(v);
+		
+		if(tilt==1)//tilting the cylinder sideways
+		{
+			Transform3D axis = new Transform3D();
+			axis.rotX(-Math.PI / 2);
+			translator.mul(axis);//combining rotation and tilt
+		}
+		if(tilt==2)//tilting the cylinder sideways
+		{
+			Transform3D axis = new Transform3D();
+			axis.rotX(-Math.PI / 2);
+			axis.rotZ(Math.PI / 2);
+			translator.mul(axis);//combining rotation and tilt
+		}
+        objTG = new TransformGroup(translator); 
+		
+		objTG.addChild(create_Object(0.05f, h, t));
+	
+	}
+	
+	protected Node create_Object(float r, float h, String t) {
+		System.err.println(System.getProperty("user.dir"));
+		app = MaterialManager.set_Appearance(t);
+		
+	
+		Cylinder tile =  new Cylinder(r, h, Primitive.GENERATE_TEXTURE_COORDS|Cylinder.GENERATE_NORMALS, 30, 30, app);
+		
+		return tile;
+	}
+	
 }
 
 /* a derived class to create a string label and place it to the bottom of the self-made cone */
