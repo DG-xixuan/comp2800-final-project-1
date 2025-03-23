@@ -9,6 +9,7 @@ import org.jogamp.vecmath.*;
 import LudoProject.MaterialManager;
 import LudoProject.ObjectManager;
 
+import org.jogamp.java3d.TransformGroup;
 
 
 public abstract class ObjectManager {
